@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-for i in *
-do
-    DTTM=$( GetFileInfo -d "$i" )
-    dayone2 -t "Apple Note" -j "Imported Notes" -d "$DTTM" < "$i"
-done
