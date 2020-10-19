@@ -1,5 +1,5 @@
 # quick config
-alias config='git --git-dir=$HOME/.dot-files/ --work-tree=$HOME'
+alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias dailybrew='brew upgrade; brew update;brew cleanup -s; brew doctor'
 alias omz='$EDITOR ~/.oh-my-zsh'
 alias zc='$EDITOR ~/.zshrc'
