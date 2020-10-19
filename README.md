@@ -7,21 +7,21 @@ A repository holding dot and conf files
 git init --bare $HOME/.dotfiles
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
-echo "alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> $HOME/.bashrc
+echo "alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> $HOME/.zshenv
 ```
 
-- The first line creates a folder `~/.dotfiles` which is a Git bare repository that will track our files.
-- Then we create an alias config which we will use instead of the regular git when we want to interact with our configuration repository.
-- We set a flag - local to the repository - to hide files we are not explicitly tracking yet. This is so that when you type config status and other commands later, files you are not interested in tracking will not show up as untracked.
-- Also you can add the alias definition by hand to your .bashrc or use the the fourth line provided for convenience.
+- The first line creates a folder `~/.dotfiles` is a Git bare repository that will track the configuration files.
+- Next lines create an alias `config` which will be used instead of the regular `git` to interact with the configuration repository.
+- Set a flag `-local` to the repository to hide files that are not being explicitly tracked. This is so `config status` and other commands can be used later, files that should not be tracked will not show up as untracked.
+- Also you can add the alias definition by hand or use the the fourth line provided for convenience.
 
-I packaged the above lines into a snippet in gist and linked it from git.io. So things can be set up with:
+The above lines are packaged nto a snippet in gist and linked from `git.io`. So things can be set up with:
 
 ```sh
-curl -Lks https://git.io/vdtKH | /bin/bash
+curl -Lks https://git.io/JT4bp | /bin/zsh
 ```
 
-After you've executed the setup any file within the $HOME folder can be versioned with normal commands, replacing git with your newly created config alias, like:
+After the setup has been executed any file within the $HOME folder can be versioned with normal commands, replacing `git` with the newly created `config` alias, like:
 
 ```sh
 config status
@@ -33,12 +33,12 @@ config push
 ```
 ### Install `dotfiles` onto a new system
 
-- Prior to the installation ensure you have the alias below in the `.bashrc` or `.zsh` file:
+- Prior to the installation ensure the alias below is in the `.zsh` file:
 ```sh
 alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 ```
 
-- Ensure the source repository ignores the folder where you'll clone it, so that you don't create recursion problems:
+- Ensure the source repository ignores the folder where it is cloned, so that there aren't recursion problems:
 ```sh
 echo ".dotfiles" >> .gitignore
 ```
