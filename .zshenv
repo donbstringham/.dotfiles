@@ -1,5 +1,5 @@
 # config setup
-export DOTCONF="~/.config"
+export DOTCONF=$HOME/.config
 export EDITOR='nvim'
 export GREP_OPTIONS="--color=auto";
 export PROMPT_COMMAND="${PROMPT_TITLE}; ${PROMPT_COMMAND}"
@@ -8,7 +8,7 @@ export TERM="xterm-256color"
 
 # history setup
 export HISTSIZE=32768
-export HISTFILE=$HOME/.zsh/zsh_history
+export HISTFILE=$DOTCONF/zsh/zsh_history
 export SAVEHIST=$HISTSIZE
 
 # homebrew
@@ -32,4 +32,4 @@ PATH=${PATH}:/Users/stringhamdb/.oh-my-zsh/plugins/z
 
 export PATH=${PATH}
 
-source $DOTCONF/zsh/.zshrc
+source $DOTCONF/zsh/zshrc
