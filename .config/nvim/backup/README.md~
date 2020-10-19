@@ -1,0 +1,362 @@
+# Assignment 09 - Final Project
+
+**PHP Web Scraper** with a **REST Web Service**
+
+Have you ever wanted to get a specific data from another website but there's no
+API available for it?
+
+That's where web scraping comes in, if the data is not made available by the
+website we can just scrape it from the website itself.
+
+But before we dive in let us first define what web scraping is. According to
+[Wikipedia](http://en.wikipedia.org/wiki/Web_scraping):
+
+> Web scraping (web harvesting or web data extraction) is a computer software
+> technique of extracting information from websites. Usually, such software
+> programs simulate human exploration of the World Wide Web by either implementing
+> low-level Hypertext Transfer Protocol (HTTP), or embedding a fully-fledged web
+> browser, such as Internet Explorer or Mozilla Firefox.
+
+So yes, web scraping lets us extract information from websites. But the thing is
+there are some legal issues regarding web scraping. Some consider it as an act of
+trespassing to the website where you are scraping the data from. That's why it is
+wise to read the terms of service of the specific website that you want to scrape
+because you might be doing something illegal without knowing it.  You can read
+more about it in this [Wikipedia page](http://en.wikipedia.org/wiki/Web_scraping).
+
+## Web Scraping Techniques
+
+There are many techniques in web scraping as mentioned in the Wikipedia page earlier.
+For this assignment we will only discuss the following:
+
+- Document Parsing
+- Regular Expressions
+
+### Document Parsing
+
+Document parsing is the process of converting HTML into DOM (Document Object
+Model) in which we can traverse through.  Here's an example on how we can scrape
+data from a public website:
+
+```php
+<?php
+//get the html returned from the following url
+$html = file_get_contents('http://pokemondb.net/evolution');
+$pokemon_doc = new DOMDocument();
+libxml_use_internal_errors(TRUE); //disable libxml errors
+if (!empty($html)) { //if any html is actually returned
+  $pokemon_doc->loadHTML($html);
+  libxml_clear_errors(); //remove errors for yucky html
+  $pokemon_xpath = new DOMXPath($pokemon_doc);
+  //get all the h2's with an id
+  $pokemon_row = $pokemon_xpath->query('//h2[@id]');
+  if ($pokemon_row->length > 0) {
+    foreach ($pokemon_row as $row) {
+      echo $row->nodeValue . "<br/>";
+    }
+  }
+}
+```
+
+What we did with the code above was to get the html returned from the url of the
+website that we want to scrape.
+
+In this case the website is [pokemondb.net](http://pokemondb.net).
+
+```php
+<?php
+$html = file_get_contents('http://pokemondb.net/evolution');
+```
+
+Then we declare a new DOM Document, this is used for converting the html string
+returned from `file_get_contents` into an actual Document Object Model which we
+can traverse through:
+
+```php
+<?php
+$pokemon_doc = new DOMDocument();
+```
+
+Then we disable libxml errors so that they won't be outputted on the screen,
+instead they will be buffered and stored:
+
+```php
+<?php
+libxml_use_internal_errors(TRUE); //disable libxml errors
+```
+
+Next we check if there's an actual html that has been returned:
+
+```php
+<?php
+if(!empty($html)){ //if any html is actually returned
+}
+```
+
+Next we use the `loadHTML()` function from the new instance of `DOMDocument`
+that we created earlier to load the html that was returned. Simply use the html
+that was returned as the argument:
+
+```php
+<?php
+$pokemon_doc->loadHTML($html);
+```
+
+Then we clear the errors if any. Most of the time crappy html causes these
+errors. Examples of crappy html are inline styling (style attributes embedded
+in elements), invalid attributes and invalid elements. Elements and attributes
+are considered invalid if they are not part of the HTML specification for the
+doctype used in the specific page.
+
+```php
+<?php
+libxml_clear_errors(); //remove errors for crappy html
+```
+
+Next we declare a new instance of `DOMXpath`. This allows us to do some queries
+with the DOM Document that we created.
+
+This requires an instance of the DOM Document as its argument.
+
+```php
+<?php
+$pokemon_xpath = new DOMXPath($pokemon_doc);
+```
+
+Finally, we simply write the query for the specific elements that we want to
+get. If you have used [jQuery](http://jquery.com/) before then this process
+is similar to what you do when you select elements from the DOM.
+
+What were selecting here is all the h2 tags which has an id, we make the
+location of the h2 unspecific by using double slashes `//` right before
+the element that we want to select. The value of the id also doesn't matter
+as long as there's an id then it will get selected. The `nodeValue` attribute
+contains the text inside the h2 that was selected.
+
+```php
+<?php
+//get all the h2's with an id
+$pokemon_row = $pokemon_xpath->query('//h2[@id]');
+
+if ($pokemon_row->length > 0) {
+  foreach ($pokemon_row as $row) {
+    echo $row->nodeValue . "<br/>";
+  }
+}
+```
+
+This results to the following text printed out in the screen:
+
+```sh
+Generation 1 - Red, Blue, Yellow
+Generation 2 - Gold, Silver, Crystal
+Generation 3 - Ruby, Sapphire, Emerald
+Generation 4 - Diamond, Pearl, Platinum
+Generation 5 - Black, White, Black 2, White 2
+```
+
+Let's do one more example with the document parsing before we move on to regular
+expressions.
+This time were going to get a list of all pokemons along with their specific
+type (E.g Fire, Grass, Water).
+
+First let's examine what we have on pokemondb.net/evolution so that we know what
+particular element to query.
+
+![screenshot](./var/img/screen-shot.png)
+
+As you can see from the screenshot, the information that we want to get is
+contained within a span element with a class of `infocard-tall`. Yes, the
+space there is included. When using XPath to query spaces are included if
+they are present, otherwise it wouldn't work.
+
+Converting what we know into actual query, we come up with this:
+
+```css
+//span[@class="infocard-tall"]
+```
+
+This selects all the span elements which has a class of `infocard-tall`. It
+doesn't matter where in the document the span is because we used the double
+forward slash before the actual element.
+
+Once were inside the span we have to get to the actual elements which directly
+contains the data that we want. And that is the name and the type of the pokemon.
+As you can see from the screenshot below the name of the pokemon is directly
+contained within an `anchor` element with a class of `ent-name`. And the types
+are stored within a `small` element with a class of `aside`.
+
+We can then use that knowledge to come up with the following code:
+
+```php
+<?php
+$pokemon_list = array();
+$pokemon_and_type = $pokemon_xpath->query('//span[@class="infocard-tall "]');
+if ($pokemon_and_type->length > 0) {
+  //loop through all the pokemons
+  foreach ($pokemon_and_type as $pat) {
+    //get the name of the pokemon
+    $name = $pokemon_xpath->query('a[@class="ent-name"]', $pat)->item(0)->nodeValue;
+    $pkmn_types = array(); //reset $pkmn_types for each pokemon
+    $types = $pokemon_xpath->query('small[@class="aside"]/a', $pat);
+    //loop through all the types and store them in the $pkmn_types array
+    foreach ($types as $type) {
+      $pkmn_types[] = $type->nodeValue; //the pokemon type
+    }
+    //store the data in the $pokemon_list array
+    $pokemon_list[] = array('name' => $name, 'types' => $pkmn_types);
+  }
+}
+//output what we have
+echo "<pre>";
+print_r($pokemon_list);
+echo "</pre>";
+```
+
+There's nothing new with the code that we have above except for using query
+inside the `foreach` loop.
+
+We use this particular line of code to get the name of the pokemon, you might
+notice that we specified a second argument when we used the `query` method. The
+second argument is the current row, we use it to specify the scope of the query.
+This means that were limiting the scope of the query to that of the current row.
+
+```php
+<?php
+$name = $pokemon_xpath->query('a[@class="ent-name"]', $pat)->item(0)->nodeValue;
+```
+
+The results would be something like this:
+
+```sh
+Array
+(
+    [0] => Array
+        (
+            [name] => Bulbasaur
+            [types] => Array
+                (
+                    [0] => Grass
+                    [1] => Poison
+                )
+        )
+    [1] => Array
+        (
+            [name] => Ivysaur
+            [types] => Array
+                (
+                    [0] => Grass
+                    [1] => Poison
+                )
+        )
+    [2] => Array
+        (
+            [name] => Venusaur
+            [types] => Array
+                (
+                    [0] => Grass
+                    [1] => Poison
+                )
+        )
+```
+
+### Regular Expressions
+
+### Simple HTML Dom
+
+To make web scraping easier you can use libraries such as simple html DOM.
+Here's an example of getting the names of the pokemon using simple html DOM:
+
+```php
+<?php
+$html = file_get_html('http://pokemondb.net/evolution');
+foreach ($html->find('a[class=ent-name]') as $element) {
+  echo $element->innertext . '<br>'; //outputs bulbasaur, ivysaur, etc...
+}
+```
+
+The syntax is more simple so the code that you have to write is lesser plus
+there are also some convenience functions and attributes which you can use. An
+example is the plaintext attribute which extracts all the text from a web page:
+
+```php
+<?php
+echo file_get_html('http://pokemondb.net/evolution')->plaintext;
+```
+
+### Scraping non-public parts of website
+
+### Scraping Amazon
+
+- [Curl](http://curl.haxx.se/)
+- [Simple HTML Dom](http://simplehtmldom.sourceforge.net/)
+- [Ganon](https://code.google.com/p/ganon/)
+
+### Resources
+
+- [I don't need no stinking API: Web Scraping for fun and profit](http://blog.hartleybrody.com/web-scraping/)
+- [Web scraping is actually pretty easy](http://blog.webspecies.co.uk/2011-07-27/web-scrapping-is-actually-pretty-easy.html)
+- [Web scraping or API](https://news.ycombinator.com/item?id=4893922)
+- [Consuming REST API in PHP Using Guzzle](https://hackernoon.com/creating-rest-api-in-php-using-guzzle-d6a890499b02)
+- [Create a Simple Testable REST API w/ Slim Framework](https://medium.com/@ogundijiboladeadio/creating-a-simple-testable-rest-api-with-slim-framework-part-1-57b0da828be1)
+
+### Architecture
+
+![architecture](./var/img/scraping_architecture.png)
+
+The data flow is controlled by the execution engine, and goes something like this:
+
+1. The **Engine** gets the initial **Requests** to crawl from the **Spider**.
+2. The **Engine** schedules the **Requests** in the **Scheduler** and asks for
+the next **Requests** to crawl.
+3. The **Scheduler** returns the next **Requests** to the **Engine**.
+4. The **Engine** sends the **Requests** to the **Downloader**, passing through the
+**Downloader Middlewares** (see process_request()).
+5. Once the page finishes downloading the **Downloader** generates a **Response**
+(with that page) and sends it to the **Engine**, passing through the **Downloader
+Middlewares** (see process_response()).
+6. The **Engine** receives the **Response** from the **Downloader** and sends
+it to the **Spider** for processing, passing through the **Spider Middleware**
+(see process_spider_input()).
+7. The **Spider** processes the **Response** and returns scraped items and new **Requests**
+(to follow) to the **Engine**, passing through the **Spider Middleware** (see process_spider_output()).
+8. The **Engine** sends processed items to **Item Pipelines**, then send processed
+**Requests** to the **Scheduler** and asks for possible next **Requests** to crawl.
+9. The process repeats (from step 1) until there are no more requests from the **Scheduler**.
+
+## Last name, first name
+
+`Github username`
+
+## The assignment
+
+### Description and information
+
+- Must have a REST API for reporting!
+- Application can either use a web-page or a command-line client (cli) for
+startup and shutdown.
+- Store all data in the MySQL database (142.93.114.73:3306).
+- You have your own database:
+  - Database name: (Github username)
+  - Username: (Github username)
+  - Password: ("letmein")
+- Only scrape [E-commerce Training Site](https://webscraper.io/test-sites/e-commerce/allinone).
+- Data to be scraped from [E-commerce Training Site](https://webscraper.io/test-sites/e-commerce/allinone):
+  - Item name
+  - Item type
+  - Item description
+  - Item cost
+- Use the [GuzzleHttp Library](http://docs.guzzlephp.org/en/5.3/#) to make
+    requests to the web site we are consuming [[E-commerce Training Site](https://webscraper.io/test-sites/e-commerce/allinone)]
+- Use the [Slim Framework](http://www.slimframework.com) for hosting your web
+    scraper's REST API.
+
+## Rubric
+
+|Trait|Exceptional (50 points)|Acceptable (40 points)|Amateur (30 points)|Unsatisfactory (20 points)|Total Points|
+|:---|:---|:---|:---|:---|:---:|
+|Features|Application works and meets all features|Application works and meets most features|Application works and meets some features|Application works and meets some features|0|
+|Readability|The code is exceptionally well organized and very easy to follow.|The code is fairly easy to read.|The code is readable only by someone who knows what it is supposed to be doing.|The code is poorly organized and very difficult to read.|0|
+|Reusability|The code could be reused as a whole or each routine could be reused.|Most of the code could be reused in other programs.|Some parts of the code could be reused in other programs.|The code is not organized for reusability.|0|
+|Documentation|The documentation is well written and clearly explains what the code is accomplishing and how.|The documentation consists of embedded comment and some simple header documentation that is somewhat useful in understanding the code.|The documentation is simply comments embedded in the code with some simple header comments separating routines.|The documentation is simply comments embedded in the code and does not help the reader understand the code.|0|
+|Code Coverage|>80%|79%>60%|59%>40%|39%>20%|19%>|

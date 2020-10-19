@@ -1,0 +1,13 @@
+windows:
+    - name: cs3620-a9
+      root: ~/Documents/GitHub/cs3620-sum2020/assignment-09-donbstringham
+      layout: tile
+      panes:
+          - commands:
+              - nvim .
+          - composer server
+          - commands:
+              - git pull
+              - git status
+              - composer update
+

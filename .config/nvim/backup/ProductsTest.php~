@@ -1,0 +1,28 @@
+<?php
+/**
+ * Unit-test for PrimeNumber.php
+ *
+ * PHP Version 7
+ *
+ * @category UnitTests
+ * @package  Tests
+ * @author   Don Stringham <donstringham@weber.edu>
+ * @license  MIT https://opensource.org/licenses/MIT
+ * @link     https://weber.edu
+ */
+declare(strict_types=1);
+namespace App\Tests;
+
+use App\Products;
+use PHPUnit\Framework\TestCase;
+
+class ProductsTest extends TestCase {
+    public function setUp() {
+        $this->harness = new Products();
+    }
+
+    public function testCanary() {
+        // arrange & act & assert
+        $this->assertTrue($this->harness instanceOf Products);
+    }
+}

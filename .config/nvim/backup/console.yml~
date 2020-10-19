@@ -1,0 +1,10 @@
+windows:
+    - name: console
+      root: ~
+      layout: tiled
+      panes:
+          - l
+          - weather
+          - mc
+          - speedtest
+

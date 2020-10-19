@@ -1,0 +1,16 @@
+<?php
+/**
+ * Products.php
+ *
+ * PHP Version 7
+ *
+ * @category Source
+ * @package  App
+ * @author   Don Stringham <donstringham@weber.edu>
+ * @license  MIT https://opensource.org/licenses/MIT
+ * @link     https://weber.edu
+ */
+declare(strict_types=1);
+namespace App;
+
+class Products {}

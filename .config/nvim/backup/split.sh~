@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+for i in *
+	do
+		time=`awk '/^##[#]?[ ]?[0-9][0-9]?[h:]/ {print $2}' "$i"`
+		if [ "$time" != "" ]
+		then
+		# CHANGE PATH if you want to.
+		# Please create the "ouptput" folder before running the script:
+			perl -n -e "\$p++; if(\$p==1 || /^##[#]?[ ]?[0-9][0-9]?[h:]/) { open FH, \">$HOME/Desktop/output/$i\".++\$n.\".txt\"; } print FH;" "$i"
+		else
+			# CHANGE PATH if you want to.
+			# Please create the "ouptput" folder before running the script:
+			cp -r "$i" "$HOME/Desktop/output/$i";
+		fi
+
+done

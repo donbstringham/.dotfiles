@@ -1,0 +1,20 @@
+<?php
+
+namespace Tests\Functional;
+
+class MysqlTest extends BaseTestCase
+{
+    public function testMysqlOnDigitalOcean()
+    {
+        $dsn = 'mysql:dbname=web4350;host=165.227.109.168';
+        $user = 'appuser';
+        $password = 'letmein';
+
+        try {
+            $dbh = new \PDO($dsn, $user, $password);
+        } catch (PDOException $e) {
+            echo 'Connection failed: ' . $e->getMessage();
+        }
+    }
+}
+

@@ -1,0 +1,9 @@
+export EGEN_DB_ADAPTER="mysql"
+export EGEN_DB_HOST="l12462.ldschurch.org"
+export EGEN_DB_PORT="3306"
+export EGEN_DB_NAME="em_events.db"
+export EGEN_DB_USER="emssvc"
+export EGEN_DB_PASS="vQq4vWWEq737"
+export EGEN_ENVIRONMENT="local"
+export EGEN_INGEST_URL="https://ldsbase.service-now.com/api/now/table/em_event"
+export EGEN_WAIT_TIME_SECS

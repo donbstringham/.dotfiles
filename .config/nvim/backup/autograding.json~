@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Prime Numbers",
+      "setup": "",
+      "run": "./vendor/bin/phpunit",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 30
+    }
+  ]
+}

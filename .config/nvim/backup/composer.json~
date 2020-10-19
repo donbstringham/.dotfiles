@@ -1,0 +1,53 @@
+{
+    "name": "cs3620/assignment-09",
+    "description": "Assignment 09",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Don Stringham",
+            "email": "donstringham@weber.edu"
+        }
+    ],
+    "autoload": {
+        "psr-4":{
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+      "psr-4": {
+        "Tests\\": "tests/"
+      }
+    },
+    "require": {
+        "php": "^7.2",
+        "guzzlehttp/guzzle": "~6.0",
+        "monolog/monolog": "^2.1",
+        "php-di/php-di": "^6.2",
+        "slim/ps7": "^1.1",
+        "slim/slim": "^4.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7",
+        "phpunit/php-invoker": "^2.0",
+        "squizlabs/php_codesniffer": "^3.1",
+        "fzaninotto/faker": "^1.7"
+    },
+    "scripts": {
+        "clean": [
+            "rm -f composer.lock",
+            "rm -f junit.xml",
+            "rm -fr vendor/"
+        ],
+        "fix": "vendor/bin/phpcbf --standard=PSR2 --extensions=php controllers models routes src tests",
+        "push": [
+            "git add .",
+            "git commit -m 'Updated assignment'",
+            "git push origin"
+        ],
+        "server": "php -S localhost:8080 -t public",
+        "sniff": "vendor/bin/phpcs --standard=PSR2 --extensions=php app logs src tests",
+        "test": [
+            "vendor/bin/phpunit"
+        ]
+    }
+}

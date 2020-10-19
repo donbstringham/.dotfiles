@@ -1,0 +1,29 @@
+#!/bin/sh
+
+dotnet clean BlabberApp.sln
+
+rm -fr ./BlabberApp.Console/obj
+rm -fr ./BlabberApp.ConsoleTest/obj
+rm -fr ./BlabberApp.Client/obj
+rm -fr ./BlabberApp.ClientTest/obj
+rm -fr ./BlabberApp.DataStore/obj
+rm -fr ./BlabberApp.DataStoreTest/obj
+rm -fr ./BlabberApp.Domain/obj
+rm -fr ./BlabberApp.DomainTest/obj
+rm -fr ./BlabberApp.Services/obj
+rm -fr ./BlabberApp.ServicesTest/obj
+rm -fr ./BlabberApp.WebApi/obj
+rm -fr ./BlabberApp.WebApiTest/obj
+
+rm -fr ./BlabberApp.Console/bin
+rm -fr ./BlabberApp.ConsoleTest/bin
+rm -fr ./BlabberApp.Client/bin
+rm -fr ./BlabberApp.ClientTest/bin
+rm -fr ./BlabberApp.DataStore/bin
+rm -fr ./BlabberApp.DataStoreTest/bin
+rm -fr ./BlabberApp.Domain/bin
+rm -fr ./BlabberApp.DomainTest/bin
+rm -fr ./BlabberApp.Services/bin
+rm -fr ./BlabberApp.ServicesTest/bin
+rm -fr ./BlabberApp.WebApi/bin
+rm -fr ./BlabberApp.WebApiTest/bin

@@ -1,0 +1,37 @@
+#!/bin/sh
+
+declare -a students=(
+"alecnicdao"
+"andrewhammon"
+"andymaynez"
+"ChaseBurr"
+"damansaini12"
+"emily-rivera"
+"jaredsholmes"
+"jatkin87"
+"jesuscordova"
+"jtice3"
+"juansantos192"
+"khumbulani20"
+"koltennay52"
+"ksande29"
+"lukeseeley"
+"Mintelgen"
+"moosehunt2007"
+"mororder89"
+"Roost312"
+"shanbark"
+"TylerNelson57"
+"waceyts"
+)
+
+for i in "${students[@]}"
+do
+    echo "Grading $i..."
+    cd $i
+    composer install
+    vendor/bin/phpunit
+    cd ..
+    read -p "Press any key to resume ..."
+done
+
